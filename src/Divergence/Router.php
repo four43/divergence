@@ -41,33 +41,36 @@ class Router {
 
 		//Find Path Info
 		$pathInfo = self::getPathInfo();
-		
+
 		Hook::fire(Hook::EVENT_PRE_ROUTE_MATCH, compact('routes', 'requestMethod', 'pathInfo'));
-		
+
 		//Route Match
 		$routeMatch = null;
 		if (isset($routes[$pathInfo])) {
+			//Literal match to route
 			$routeMatch = $routes[$pathInfo];
 		}
 		else if ($routes) {
+			//Regex Match Route
 			$tokens = array(
 				':alpha'	 => '([a-zA-Z0-9-_]+)',
 				':alnum'	 => '([0-9a-zA-Z-_]+)',
 				':number'	 => '([0-9]+)',
 				':string'	 => '([a-zA-Z-_]+)',
 			);
-			
-			foreach ($routes as $pattern => $handlerName) {
+
+			foreach ($routes as $pattern => $routeConfig) {
 				$pattern = strtr($pattern, $tokens);
 				$matches = array();
 				if (preg_match('#^/?'.$pattern.'/?$#', $pathInfo, $matches)) {
-					$matchedHandler	 = $handlerName;
-					$regexMatches		 = $matches;
+					$routeMatch		 = $routeConfig;
+					$matchedHandler	 = $routeConfig->callable;
+					$regexMatches	 = $matches;
 					break;
 				}
 			}
 		}
-		$result = null;
+		$result			 = null;
 		$handlerInstance = null;
 		if ($matchedHandler) {
 			if (is_string($matchedHandler)) {
@@ -77,9 +80,10 @@ class Router {
 				$handlerInstance = $matchedHandler();
 			}
 		}
-		
+
 		Hook::fire(Hook::EVENT_POST_ROUTE_MATCH, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches'));
 
+		//Dispatch handler
 		if ($handlerInstance) {
 			unset($regexMatches[0]);
 
@@ -94,14 +98,14 @@ class Router {
 				Hook::fire(Hook::EVENT_POST_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
 			}
 			else {
-				Hook::fire('404', compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
+				Hook::fire(Hook::EVENT_RESPONSE_NOT_ALLOWED, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches'));
 			}
 		}
 		else {
-			Hook::fire('404', compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
+			Hook::fire(Hook::EVENT_RESPONSE_NOT_FOUND, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches'));
 		}
-		
-		Hook::fire(Hook::EVENT_POST_REQUEST, compact($routes));
+
+		Hook::fire(Hook::EVENT_POST_REQUEST, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
 	}
 
 	/**
@@ -129,7 +133,7 @@ class Router {
 	protected static function isXhrRequest() {
 		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
 	}
-	
+
 	protected static function setXhrHeaders() {
 		header('Content-type: application/json');
 		header('Expires: Sun, 12 Mar 1989 00:00:00 GMT');
@@ -139,14 +143,4 @@ class Router {
 		header('Pragma: no-cache');
 	}
 
-	protected static function responseMethodNotAllowed() {
-		http_response_code(405);
-	}
-
-	protected static function responseNotFound() {
-		http_response_code(404);
-	}
-
 }
-
-

@@ -13,18 +13,20 @@
  * Router::serve
  */
 class RouteConfig {
-
-	protected $path;
-	protected $callable;
-	protected $groups;
+	
+	public $callable;
+	public $groups;
+	public $meta;
 	
 	/**
 	 * Construct
 	 * 
-	 * @param callable $callable
-	 * @param string|array $groups
+	 * @param callable $callable - A valid PHP callable, classes will be instanciated
+	 * @param string|array $groups - A group to keep this route.
+	 * @param mixed $meta - Can be anything you would like to pass along with
+	 *		the route.
 	 */
-	public function __construct(string $callable, $groups = null) {
+	public function __construct(string $callable, $groups = null, $meta = null) {
 		//$this->path		 = $path;
 		$this->callable	 = $callable;
 		if (is_array($groups)) {

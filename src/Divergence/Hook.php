@@ -45,6 +45,17 @@ class Hook {
 	 * Event fired after everything happens.
 	 */
 	const EVENT_POST_REQUEST		 = 'post_request';
+	
+	/**
+	 * Fired when the route wasn't found.
+	 */
+	const EVENT_RESPONSE_NOT_FOUND = 'response_404';
+	
+	/**
+	 * Fired when the method was not found for a given route.
+	 */
+	const EVENT_RESPONSE_NOT_ALLOWED = 'response_405';
+	
 
 	/**
 	 * Instance

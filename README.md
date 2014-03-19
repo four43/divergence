@@ -4,12 +4,14 @@ Divergence Router
 A fast router for PHP, as easy, or as full featured as you need it.
 
 Insipred by ToroRouter (https://github.com/anandkunal/ToroPHP), which is a great
-router to quickly create simple apps, Divergence aims to be almost as simple, but
+router to quickly create simple apps. Divergence aims to be almost as simple, but
 provide more features for larger apps.
 
 Features
 --------
 
-* Simple single file router - commented and easy to understand.
-* Built in debug handler - add it to your app temporarily to see what callbacks
+* *Simple* - Single file rouder, commented and easy to understand.
+* *Debug* - Provided debug handler, add it to your app temporarily to see what callbacks
 get called when, and with what data.
+* *Server Setup* - Use provided server configs (.htaccess for Apache and web.config for IIS) to route
+all of your requests to your index.php file.
