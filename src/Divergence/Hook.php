@@ -81,7 +81,7 @@ class Hook {
 	 * @param string $eventName
 	 * @param callable $callback
 	 */
-	public static function subscribe(string $eventName, \callable $callback) {
+	public static function subscribe($eventName, callable $callback) {
 		$instance						 = self::getInstance();
 		$instance->hooks[$eventName][]	 = $callback;
 	}
@@ -94,7 +94,7 @@ class Hook {
 	 * @param string $eventName
 	 * @param type $params
 	 */
-	public static function fire(string $eventName, $params = null) {
+	public static function fire($eventName, $params = null) {
 		$instance = self::getInstance();
 		if (isset($instance->hooks[$eventName])) {
 			foreach ($instance->hooks[$eventName] as $function) {
