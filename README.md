@@ -19,3 +19,22 @@ Features
 get called when, and with what data.
 * *Server Setup* - Use provided server configs (.htaccess for Apache and web.config for IIS) to route
 all of your requests to your index.php file.
+
+Example
+-------
+
+###Basic
+```php
+<?php
+$routes = array(
+	'/v1/action/:number' => 'RestV1\Controller\Action'
+);
+\Divegent\Router::serve($routes);
+```
+Will route `/v1/action/123` to the controller `RestV1\Controller\Action` based 
+on the method, `GET` will call the `get()` method as `get(123)`
+
+###Basic - Callback
+
+
+
