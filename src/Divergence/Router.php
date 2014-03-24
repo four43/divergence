@@ -88,15 +88,15 @@ class Router {
 						break;
 					}
 					else {
-						trigger_error("Wasn't able to find handler in route: "
-								.$pattern." didn't pass a string, callable, or array config.");
+						throw new RouteConfigException("Wasn't able to find handler in route: "
+						.$pattern." didn't pass a string, callable, or array config.");
 					}
 					//Keep looping if this is a bad config.
 				}
 			}
 		}
 
-		Hook::fire(Hook::EVENT_POST_ROUTE_MATCH, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches'));
+		Hook::fire(Hook::EVENT_POST_ROUTE_MATCH, compact('routes', 'requestMethod', 'pathInfo', 'routeMatch', 'matchedHandler', 'handlerInstance', 'regexMatches'));
 
 		$handlerInstance = null;
 		$result			 = null;
@@ -106,29 +106,29 @@ class Router {
 		if ($matchedHandler) {
 			if (is_string($matchedHandler)) {
 				//Matched Handler is a string, should be the name of and object, lets instantiate it.
-				$handlerInstance = new $matchedHandler();
+				if (class_exists($matchedHandler)) {
+					$handlerInstance = new $matchedHandler();
 
-				//Dispatch handler
-				if ($handlerInstance) {
+					//Dispatch handler
 					if (method_exists($handlerInstance, $requestMethod)) {
-						Hook::fire(Hook::EVENT_PRE_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches'));
+						Hook::fire(Hook::EVENT_PRE_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'routeMatch', 'matchedHandler', 'handlerInstance', 'regexMatches'));
 						$result = call_user_func_array(array($handlerInstance, $requestMethod), $regexMatches);
-						Hook::fire(Hook::EVENT_POST_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
+						Hook::fire(Hook::EVENT_POST_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'routeMatch', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
 					}
 					else {
-						Hook::fire(Hook::EVENT_RESPONSE_NOT_ALLOWED, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches'));
+						Hook::fire(Hook::EVENT_RESPONSE_NOT_ALLOWED, compact('routes', 'requestMethod', 'pathInfo', 'routeMatch', 'matchedHandler', 'handlerInstance', 'regexMatches'));
 					}
 				}
 				else {
-					Hook::fire(Hook::EVENT_RESPONSE_NOT_FOUND, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches'));
+					Hook::fire(Hook::EVENT_RESPONSE_NOT_FOUND, compact('routes', 'requestMethod', 'pathInfo', 'routeMatch', 'matchedHandler', 'handlerInstance', 'regexMatches'));
 				}
 			}
 			elseif (is_callable($matchedHandler)) {
 				//If callable, simply call it with the data we have.
 				//@todo Make callable template
-				Hook::fire(Hook::EVENT_PRE_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches'));
+				Hook::fire(Hook::EVENT_PRE_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'routeMatch', 'matchedHandler', 'handlerInstance', 'regexMatches'));
 				$result = call_user_func_array($matchedHandler, $regexMatches);
-				Hook::fire(Hook::EVENT_POST_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
+				Hook::fire(Hook::EVENT_POST_DISPATCH, compact('routes', 'requestMethod', 'pathInfo', 'routeMatch', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
 			}
 		}
 		else {
@@ -136,7 +136,7 @@ class Router {
 			Hook::fire(Hook::EVENT_RESPONSE_NOT_FOUND, compact('routes', 'requestMethod', 'pathInfo', 'regexMatches'));
 		}
 
-		Hook::fire(Hook::EVENT_POST_REQUEST, compact('routes', 'requestMethod', 'pathInfo', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
+		Hook::fire(Hook::EVENT_POST_REQUEST, compact('routes', 'requestMethod', 'pathInfo', 'routeMatch', 'matchedHandler', 'handlerInstance', 'regexMatches', 'result'));
 
 		return $result;
 	}
