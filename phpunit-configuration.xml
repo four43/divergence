@@ -17,6 +17,7 @@
             <directory>./</directory>
             <exclude>
                 <directory>./test/</directory>
+				<directory>./src/Divergence/Debug/</directory>
             </exclude>
         </whitelist>
     </filter>
