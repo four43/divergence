@@ -9,6 +9,7 @@ provide more features for larger apps.
 
 Build Status
 ------------
+Master: [![Build Status](https://travis-ci.org/four43/divergence.svg?branch=master)](https://travis-ci.org/four43/divergence)
 Development: [![Build Status](https://travis-ci.org/four43/divergence.svg?branch=development)](https://travis-ci.org/four43/divergence)
 
 Features
