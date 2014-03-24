@@ -7,6 +7,10 @@ Insipred by ToroRouter (https://github.com/anandkunal/ToroPHP), which is a great
 router to quickly create simple apps. Divergence aims to be almost as simple, but
 provide more features for larger apps.
 
+Build Status
+------------
+Development: [![Build Status](https://travis-ci.org/four43/divergence.svg?branch=development)](https://travis-ci.org/four43/divergence)
+
 Features
 --------
 
